@@ -24,7 +24,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 
-def fetch_sheet_rows():
+def fetch_sheet_rows(sheet_name: str):
     """
     Fetch the sheet as CSV and return rows as list of lists.
     Sheet must be public or 'published to web'.
@@ -37,7 +37,7 @@ def fetch_sheet_rows():
     """
     url = (
         f"https://docs.google.com/spreadsheets/d/"
-        f"{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
+        f"{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
     )
     resp = requests.get(url)
     resp.raise_for_status()
@@ -49,12 +49,12 @@ def fetch_sheet_rows():
     return rows
 
 
-def find_student_by_id(id_number: str):
+def find_student_by_id(id_number: str, sheet_name: str):
     """
-    Search for a student by رقم الهوية (column A).
+    Search for a student by رقم الهوية (column A) in the specified sheet.
     Returns dict or None if not found.
     """
-    rows = fetch_sheet_rows()
+    rows = fetch_sheet_rows(sheet_name)
     if not rows:
         return None
 
@@ -93,20 +93,31 @@ async def index(request: Request):
 
 
 @app.post("/", response_class=HTMLResponse)
-async def search(request: Request, idNumber: str = Form(...)):
+async def search(request: Request, idNumber: str = Form(...), className: str = Form(...)):
     """
-    Handle form submit: student enters رقم الهوية.
+    Handle form submit: student enters رقم الهوية and selects class.
     If found ➜ show result page, else show index with error.
     """
+    # Map class selection to sheet name
+    class_to_sheet = {
+        "1": "1",  # الصف الأول
+        "2": "2",  # الصف الثاني
+        "3": "3",  # الصف الثالث
+    }
+    
+    sheet_name = class_to_sheet.get(className, "1")  # Default to sheet "1"
+    
     try:
-        student = find_student_by_id(idNumber)
+        student = find_student_by_id(idNumber, sheet_name)
     except Exception as e:
         # If the sheet is unreachable or mis-configured
         return templates.TemplateResponse(
             "index.html",
             {
                 "request": request,
-                "error": "حدث خطأ في الاتصال بقاعدة البيانات. يرجى المحاولة لاحقًا."
+                "error": "حدث خطأ في الاتصال بقاعدة البيانات. يرجى المحاولة لاحقًا.",
+                "selectedClass": className,
+                "enteredId": idNumber
             }
         )
 
@@ -115,7 +126,9 @@ async def search(request: Request, idNumber: str = Form(...)):
             "index.html",
             {
                 "request": request,
-                "error": "لا يوجد طالبة بهذا رقم الهوية."
+                "error": "لا يوجد طالبة بهذا رقم الهوية.",
+                "selectedClass": className,
+                "enteredId": idNumber
             }
         )
 
