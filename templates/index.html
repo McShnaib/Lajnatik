@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>استعلام بيانات الطالبة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg-gradient: linear-gradient(135deg, #0f172a, #1d4ed8);
+        --card-bg: #ffffff;
+        --accent: #2563eb;
+        --accent-soft: rgba(37, 99, 235, 0.12);
+        --danger: #dc2626;
+        --text-main: #0f172a;
+        --text-muted: #6b7280;
+        --radius-xl: 24px;
+        --radius-lg: 16px;
+        --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Noto Sans Arabic", sans-serif;
+        background: var(--bg-gradient);
+        color: var(--text-main);
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .card {
+        background: radial-gradient(circle at top right, #dbeafe 0, #ffffff 48%);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-soft);
+        padding: 24px 22px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @media (min-width: 480px) {
+        .card {
+          padding: 28px 26px 22px;
+        }
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.04);
+        color: var(--text-muted);
+        margin-bottom: 10px;
+      }
+
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+      }
+
+      .title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 0 0 20px;
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: #1d4ed8;
+        font-size: 11px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .pill span {
+        font-size: 14px;
+      }
+
+      form {
+        margin-top: 10px;
+      }
+
+      .field-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px 11px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        font-size: 14px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.9);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease,
+          background 0.15s ease;
+      }
+
+      input[type="text"]::placeholder {
+        color: #9ca3af;
+      }
+
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12),
+          0 14px 30px rgba(15, 23, 42, 0.18);
+        background: #ffffff;
+      }
+
+      .hint {
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      @media (min-width: 420px) {
+        .actions {
+          flex-direction: row;
+        }
+      }
+
+      button[type="submit"] {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        background: radial-gradient(circle at top left, #93c5fd 0, #2563eb 40%);
+        color: #ffffff;
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
+        transition: transform 0.12s ease, box-shadow 0.12s ease,
+          filter 0.12s ease;
+      }
+
+      button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 38px rgba(37, 99, 235, 0.55);
+        filter: brightness(1.03);
+      }
+
+      button[type="submit"]:active {
+        transform: translateY(0);
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.35);
+        filter: brightness(0.98);
+      }
+
+      .secondary-text {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-align: center;
+      }
+
+      .error {
+        margin-top: 14px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(248, 113, 113, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: var(--danger);
+        font-size: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .error-icon {
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .footer {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 11px;
+        color: rgba(226, 232, 240, 0.9);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          نظام الاستعلام عن بيانات لجنة الامتحان
+        </div>
+
+        <p class="pill">
+          🧑‍🎓 <span>أدخل رقم الهوية للحصول على رقم الجلوس وبيانات اللجنة</span>
+        </p>
+
+        <h1 class="title">استعلام بيانات الطالبة</h1>
+        <p class="subtitle">
+          يرجى إدخال <strong>رقم الهوية الوطنية</strong> الخاص بالطالبة بشكل صحيح،
+          ثم اضغط على زر <strong>بحث</strong> لعرض بيانات رقم الجلوس، الدور، واللجنة.
+        </p>
+
+        <form method="post" action="/">
+          <div class="field-group">
+            <label for="idNumber">رقم الهوية</label>
+            <input
+              type="text"
+              id="idNumber"
+              name="idNumber"
+              placeholder="مثال: 1234567890"
+              required
+            />
+            <div class="hint">تحقق من الأرقام قبل الإرسال لتفادي الأخطاء.</div>
+          </div>
+
+          <div class="actions">
+            <button type="submit">بحث عن البيانات</button>
+          </div>
+
+          <p class="secondary-text">
+            لا يتم حفظ أي بيانات بعد عملية الاستعلام. النظام للعرض فقط.
+          </p>
+
+          {% if error %}
+          <div class="error">
+            <span class="error-icon">⚠️</span>
+            <span>{{ error }}</span>
+          </div>
+          {% endif %}
+        </form>
+      </div>
+
+      <div class="footer">
+        نظام إلكتروني مبسط لخدمة الطالبات في الاستعلام عن بيانات الامتحان
+      </div>
+    </div>
+  </body>
+</html>
