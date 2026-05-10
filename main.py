@@ -21,7 +21,8 @@ if not SHEET_ID:
     raise RuntimeError("SHEET_ID environment variable is required")
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 
 def fetch_sheet_rows(sheet_name: str):
